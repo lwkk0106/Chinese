@@ -1,0 +1,2055 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>課文溫習</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'DFKai-SB', '標楷體', DFKai-SB, "BiauKai", serif;
+      margin: 0;
+      color: #222;
+      background: linear-gradient(135deg, #a8e6ff 0%, #f9f9a7 100%);
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center center;
+      position: relative;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    body::before, body::after {
+      content: "";
+      position: fixed;
+      z-index: 0;
+      pointer-events: none;
+      width: 60vw; height: 60vw;
+      border-radius: 50%;
+      opacity: 0.18;
+      background: radial-gradient(circle at 30% 20%, #222 0%, transparent 80%);
+      animation: inkmove1 18s linear infinite alternate;
+    }
+    body::after {
+      left: auto; right: 0; top: auto; bottom: 0;
+      background: radial-gradient(circle at 70% 80%, #2d6a4f 0%, transparent 80%);
+      animation: inkmove2 22s linear infinite alternate;
+    }
+    @keyframes inkmove1 {
+      0% { left: -10vw; top: -10vw; }
+      100% { left: 10vw; top: 5vw; }
+    }
+    @keyframes inkmove2 {
+      0% { right: -10vw; bottom: -10vw; }
+      100% { right: 10vw; bottom: 5vw; }
+    }
+    .watermark {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0.12;
+      font-size: 2.2rem;
+      font-weight: bold;
+      pointer-events: none;
+      z-index: 1000;
+      user-select: none;
+      white-space: nowrap;
+      letter-spacing: 2px;
+      transition: font-size 0.3s, top 0.3s;
+    }
+    @media (max-width: 900px) {
+      .watermark {
+        font-size: 1.3rem;
+        top: 6px;
+      }
+    }
+    @media (max-width: 600px) {
+      .watermark {
+        font-size: 0.9rem;
+        top: 2px;
+        letter-spacing: 1px;
+      }
+    }
+    .container {
+      max-width: 600px;
+      margin: 60px auto 0 auto;
+      background: rgba(255,255,255,0.92);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(45,106,79,0.10);
+      padding: 40px 28px 32px 28px;
+      position: relative;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 18px;
+      letter-spacing: 3px;
+      color: #2d6a4f;
+      font-weight: 700;
+      text-shadow: 0 2px 8px #e0e0e0;
+    }
+    .difficulty-btn {
+      width: 100%;
+      padding: 18px;
+      margin: 16px 0;
+      font-size: 1.25rem;
+      border: none;
+      border-radius: 12px;
+      background: #b7e4c7;
+      color: #222;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(45,106,79,0.10);
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .difficulty-btn:hover, .difficulty-btn.selected {
+      background: #2d6a4f;
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(45,106,79,0.18);
+    }
+    .start-btn {
+      width: 100%;
+      padding: 16px;
+      font-size: 1.15rem;
+      border: none;
+      border-radius: 12px;
+      background: #52b788;
+      color: #fff;
+      cursor: pointer;
+      margin-top: 24px;
+      box-shadow: 0 2px 8px rgba(45,106,79,0.10);
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .start-btn:disabled {
+      background: #b7e4c7;
+      color: #888;
+      cursor: not-allowed;
+    }
+    .game-info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 9px;
+      font-size: 1.62rem;
+      flex-wrap: wrap;
+      border-bottom: 1.5px solid #f9c74f;
+      padding-bottom: 8px;
+    }
+    .game-info span {
+      margin: 4px 0;
+    }
+    .progress-bar-bg {
+      width: 100%;
+      height: 12px;
+      background: #f7f7f7;
+      border-radius: 8px;
+      margin: 18px 0 0 0;
+      box-shadow: 0 1px 4px #eee;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #f9c74f 60%, #b7e4c7 100%);
+      border-radius: 8px;
+      transition: width 0.4s;
+    }
+    .question-area {
+      margin: 16px 0 20px 0;
+      font-size: 1.95rem;
+      line-height: 2.1;
+      min-height: 80px;
+      word-break: break-all;
+      text-align: justify;
+      letter-spacing: 1.5px;
+    }
+    .blank {
+      display: inline-block;
+      min-width: 54px;
+      min-height: 36px;
+      border-bottom: 2.5px solid #f9c74f;
+      margin: 0 6px;
+      vertical-align: middle;
+      background: #fffbe6;
+      border-radius: 6px;
+      text-align: center;
+      transition: background 0.2s, border 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+      font-size: 1.1em;
+      position: relative;
+      box-shadow: 0 1px 4px #f9c74f33;
+    }
+    .blank input {
+      width: 90%;
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 1.1em;
+      text-align: center;
+      color: #222;
+      padding: 2px 0;
+    }
+    .blank.correct {
+      background: #b7e4c7;
+      border-bottom: 2.5px solid #38b000;
+      animation: inkflash-green 0.7s;
+    }
+    .blank.wrong {
+      background: #ffb3b3;
+      border-bottom: 2.5px solid #d90429;
+      animation: inkflash-red 0.7s;
+    }
+    @keyframes inkflash-green {
+      0% { box-shadow: 0 0 0 0 #38b00044; }
+      50% { box-shadow: 0 0 16px 8px #38b00044; }
+      100% { box-shadow: 0 0 0 0 #38b00044; }
+    }
+    @keyframes inkflash-red {
+      0% { box-shadow: 0 0 0 0 #d9042944; }
+      50% { box-shadow: 0 0 16px 8px #d9042944; }
+      100% { box-shadow: 0 0 0 0 #d9042944; }
+    }
+    .choices-area {
+      margin: 22px 0 0 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      justify-content: center;
+    }
+    .choice-btn {
+      padding: 10px 20px;
+      font-size: 1.65rem;
+      border: 1.5px solid #2d6a4f;
+      border-radius: 8px;
+      background: #fff;
+      color: #222;
+      cursor: pointer;
+      margin: 2px 0;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+      min-width: 54px;
+      box-shadow: 0 1px 4px #b7e4c7aa;
+    }
+    .choice-btn:disabled {
+      background: #eee;
+      color: #aaa;
+      cursor: not-allowed;
+    }
+    .choice-btn.selected {
+      background: #2d6a4f;
+      color: #fff;
+      border-color: #2d6a4f;
+      box-shadow: 0 2px 8px #2d6a4faa;
+    }
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      margin: 24px 0 0 0;
+      gap: 14px;
+    }
+    .actions button {
+      flex: 1;
+      padding: 12px 0;
+      font-size: 1.08rem;
+      border: none;
+      border-radius: 10px;
+      background: #74c69d;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #b7e4c7aa;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .actions button:disabled {
+      background: #b7e4c7;
+      color: #888;
+      cursor: not-allowed;
+    }
+    .actions .hint-btn {
+      background: #f9c74f;
+      color: #222;
+    }
+    .actions .hint-btn:disabled {
+      background: #ffe8a1;
+      color: #aaa;
+    }
+    .actions .submit-btn, .actions .next-btn {
+      background: #2d6a4f;
+    }
+    .feedback-area {
+      margin: 20px 0 0 0;
+      font-size: 1.15rem;
+      text-align: center;
+      min-height: 36px;
+      letter-spacing: 1px;
+    }
+    .feedback-correct {
+      color: #38b000;
+      font-weight: bold;
+    }
+    .feedback-wrong {
+      color: #d90429;
+      font-weight: bold;
+    }
+    .modal-bg {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.25);
+      z-index: 1001;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal {
+      background: #fff;
+      border-radius: 16px;
+      padding: 32px 28px 22px 28px;
+      max-width: 90vw;
+      min-width: 220px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+      text-align: center;
+      position: relative;
+    }
+    .modal button {
+      margin-top: 18px;
+      padding: 10px 32px;
+      border: none;
+      border-radius: 10px;
+      background: #2d6a4f;
+      color: #fff;
+      font-size: 1.08rem;
+      cursor: pointer;
+    }
+    .review-list {
+      margin: 0;
+      padding: 0 0 0 0;
+      list-style: none;
+      font-size: 1rem;
+    }
+    .review-list li {
+      margin: 12px 0;
+      padding: 10px 12px;
+      background: #f1f1f1;
+      border-radius: 8px;
+      text-align: left;
+      word-break: break-all;
+    }
+    .review-correct {
+      color: #38b000;
+      font-weight: bold;
+    }
+    .review-wrong {
+      color: #d90429;
+      font-weight: bold;
+    }
+    @media (max-width: 700px) {
+      .container {
+        margin: 18px 2vw 0 2vw;
+        padding: 14px 4vw 12px 4vw;
+      }
+      h1 { font-size: 1.5rem; }
+      .game-info { font-size: 0.98rem; }
+      .question-area { font-size: 1.08rem; }
+      .choice-btn, .actions button { font-size: 1rem; }
+    }
+    @media (max-width: 480px) {
+      .container {
+        margin: 6px 1vw 0 1vw;
+        padding: 8px 2vw 8px 2vw;
+      }
+      h1 { font-size: 1.1rem; }
+      .game-info { font-size: 0.92rem; }
+      .question-area { font-size: 0.98rem; }
+      .choice-btn, .actions button { font-size: 0.95rem; }
+    }
+    .question-area,
+    .choice-btn,
+    .blank,
+    .blank input {
+      font-family: 'DFKai-SB', '標楷體', DFKai-SB, KaiTi, serif !important;
+    }
+    body, .container, .game-info, .progress-bar-bg, .progress-bar, .actions, .feedback-area, .review-list, .modal, .modal-bg {
+      font-variant-numeric: lining-nums;
+    }
+    .question-area, .choice-btn, .blank, .blank input, .game-info, .actions, .feedback-area, .review-list, .modal, .modal-bg, #game-timer, #game-score, #game-errors, #game-qnum, #result-score, #result-time {
+      font-feature-settings: "lnum";
+    }
+    .question-area, .choice-btn, .blank, .blank input, .game-info, .actions, .feedback-area, .review-list, .modal, .modal-bg, #game-timer, #game-score, #game-errors, #game-qnum, #result-score, #result-time {
+      unicode-bidi: isolate;
+    }
+    .question-area, .choice-btn, .blank, .blank input, .game-info, .actions, .feedback-area, .review-list, .modal, .modal-bg, #game-timer, #game-score, #game-errors, #game-qnum, #result-score, #result-time {
+      font-family: 'DFKai-SB', '標楷體', DFKai-SB, KaiTi, serif;
+    }
+    .question-area span, .choice-btn span, .blank span, .blank input, .game-info span, .actions span, .feedback-area span, .review-list span, .modal span, .modal-bg span {
+      font-family: inherit;
+    }
+    .question-area, .choice-btn, .blank, .blank input, .game-info, .actions, .feedback-area, .review-list, .modal, .modal-bg, #game-timer, #game-score, #game-errors, #game-qnum, #result-score, #result-time {
+      font-family: 'DFKai-SB', '標楷體', DFKai-SB, KaiTi, serif;
+    }
+    .question-area, .choice-btn, .blank, .blank input, .game-info, .actions, .feedback-area, .review-list, .modal, .modal-bg, #game-timer, #game-score, #game-errors, #game-qnum, #result-score, #result-time {
+      font-variant-numeric: lining-nums;
+    }
+    .question-area .num, .choice-btn .num, .blank .num, .blank input.num, .game-info .num, .actions .num, .feedback-area .num, .review-list .num, .modal .num, .modal-bg .num, #game-timer, #game-score, #game-errors, #game-qnum, #result-score, #result-time {
+      font-family: 'Times New Roman', Times, serif !important;
+      letter-spacing: 1px;
+    }
+    .choice-btn.blank-choice {
+      background: #fffbe6;
+      border-bottom: 2.5px solid #f9c74f;
+      min-width: 54px;
+      min-height: 36px;
+      color: transparent;
+      box-shadow: 0 1px 4px #f9c74f33;
+    }
+    h1, h2, button, .choice-btn, .start-btn, .difficulty-btn, input, select, textarea, .modal button {
+      font-family: 'DFKai-SB', '標楷體', DFKai-SB, "BiauKai", serif !important;
+    }
+    * { -webkit-tap-highlight-color: transparent; }
+    input, button, select, textarea { font-size: 1rem; }
+  </style>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jieba-zh@1.0.2/dist/jieba-zh.min.js"></script>
+</head>
+<body>
+  <script>document.body.style.background = '#ffcccc';</script>
+  <div class="watermark">文理書院（九龍）中國語文科</div>
+  <div class="container" id="main-container">
+    <!-- 首頁 -->
+    <div id="home-page">
+      <div style="position:relative;">
+        <h1 style="display:inline-block;">課文溫習</h1>
+        <button id="teacher-btn" style="position:absolute; right:0; top:0; font-size:1.05rem; padding:7px 18px; background:#f9c74f; color:#222; border:none; border-radius:8px; box-shadow:0 2px 8px #f9c74f55; cursor:pointer; font-weight:bold;">老師專區</button>
+      </div>
+      <div style="text-align:center; margin-bottom:10px; color:#888; font-size:0.98rem;">
+        請先選擇題庫，再選擇難度開始挑戰
+      </div>
+      <div style="text-align:center; margin-bottom:10px;">
+        <label for="student-bank-select" style="font-weight:bold;">選擇題庫：</label>
+        <select id="student-bank-select" style="padding:6px 12px; border-radius:6px; border:1px solid #ccc; margin-right:8px;">
+          <option value="default">預設題庫</option>
+        </select>
+        <span id="student-bank-loading" style="color:#888; display:none;">載入中...</span>
+      </div>
+      <button class="difficulty-btn" data-difficulty="easy" disabled>簡單</button>
+      <button class="difficulty-btn" data-difficulty="normal" disabled>一般</button>
+      <button class="difficulty-btn" data-difficulty="hard" disabled>困難</button>
+      <button class="start-btn" id="start-btn" disabled>開始遊戲</button>
+    </div>
+    <!-- 遊戲頁 -->
+    <div id="game-page" style="display:none;">
+      <div class="game-info">
+        <span id="game-difficulty"></span>
+        <span>分數：<span id="game-score">0</span></span>
+        <span>錯誤：<span id="game-errors"></span></span>
+        <span>第 <span id="game-qnum"></span> 題</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+      </div>
+      <div class="question-area" id="question-area"></div>
+      <div class="choices-area" id="choices-area"></div>
+      <div class="actions">
+        <button class="hint-btn" id="hint-btn"><i class="fa-solid fa-lightbulb"></i> 提示</button>
+        <button class="submit-btn" id="submit-btn"><i class="fa-solid fa-circle-check"></i> 提交答案</button>
+        <button class="next-btn" id="next-btn" style="display:none;"><i class="fa-solid fa-arrow-right"></i> 下一題</button>
+      </div>
+      <div style="text-align:center; margin:40px 0 0 0; font-size:3.24rem; font-weight:bold; color:#2d6a4f; letter-spacing:2px;">
+        剩餘時間：<span id="game-timer"></span>
+      </div>
+      <div class="feedback-area" id="feedback-area"></div>
+    </div>
+    <!-- 結算頁 -->
+    <div id="result-page" style="display:none;">
+      <h1>遊戲結算</h1>
+      <div style="text-align:center; margin-bottom:18px;">
+        <div>難度：<span id="result-difficulty"></span></div>
+        <div>總分：<span id="result-score"></span></div>
+        <div>總用時：<span id="result-time"></span> 秒</div>
+      </div>
+      <div style="margin-bottom:10px; font-weight:bold;">錯誤回顧：</div>
+      <ul class="review-list" id="review-list"></ul>
+      <button onclick="location.reload()"><i class="fa-solid fa-house"></i> 返回首頁</button>
+    </div>
+    <!-- 老師登入頁 -->
+    <div id="teacher-login-page" style="display:none; max-width:400px; margin:40px auto 0 auto; background:#fffbe6; border-radius:16px; box-shadow:0 2px 12px #f9c74f33; padding:32px 28px;">
+      <h2 style="text-align:center; color:#2d6a4f; margin-bottom:18px;">老師專區登入</h2>
+      <div style="margin-bottom:14px;">
+        <label>老師ID：</label><input id="teacher-id-input" type="text" style="width:70%; padding:6px; border-radius:6px; border:1px solid #ccc;">
+      </div>
+      <div style="margin-bottom:18px;">
+        <label>密碼：</label><input id="teacher-pw-input" type="password" style="width:70%; padding:6px; border-radius:6px; border:1px solid #ccc;">
+      </div>
+      <button id="teacher-login-btn" style="width:100%; padding:10px; background:#2d6a4f; color:#fff; border:none; border-radius:8px; font-size:1.1rem;">登入</button>
+      <div id="teacher-login-err" style="color:#d90429; text-align:center; margin-top:12px; display:none;"></div>
+      <button id="teacher-login-back" style="margin-top:18px; width:100%; padding:8px; background:#eee; color:#222; border:none; border-radius:8px;">返回首頁</button>
+    </div>
+
+    <!-- 老師專區主頁 -->
+    <div id="teacher-main-page" style="display:none; max-width:900px; margin:40px auto 0 auto; background:#fffbe6; border-radius:16px; box-shadow:0 2px 12px #f9c74f33; padding:32px 28px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="color:#2d6a4f;">老師專區</h2>
+        <button id="teacher-logout-btn" style="padding:8px 18px; background:#f9c74f; color:#222; border:none; border-radius:8px; font-weight:bold;">登出</button>
+      </div>
+      <!-- 新增分頁按鈕 -->
+      <div id="teacher-tabs" style="margin:18px 0 18px 0; display:flex; gap:12px; flex-wrap:wrap;">
+        <button class="teacher-tab-btn" data-tab="main" style="background:#b7e4c7; color:#222; border:none; border-radius:8px; padding:8px 18px; font-size:1.08rem;">題庫管理</button>
+      </div>
+      <!-- 題庫管理區塊（原本內容） -->
+      <div id="teacher-main-area">
+        <div style="margin:24px 0 18px 0; display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+          <label for="folder-select" style="font-weight:bold; color:#2d6a4f;">資料夾：</label>
+          <select id="folder-select" style="padding:6px 12px; border-radius:6px; border:1px solid #ccc; margin-right:8px;"></select>
+          <button id="add-folder-btn" style="background:#38b000; color:#fff; border:none; border-radius:8px; padding:6px 14px; font-size:1.05rem;">新增</button>
+          <button id="delete-folder-btn" style="background:#d90429; color:#fff; border:none; border-radius:8px; padding:6px 14px; font-size:1.05rem;">刪除</button>
+          <button id="toggle-public-btn" style="background:#f9c74f; color:#222; border:none; border-radius:8px; padding:6px 14px; font-size:1.05rem;">公開/私有</button>
+        </div>
+        <div style="margin:18px 0 12px 0; display:flex; gap:12px; flex-wrap:wrap;">
+          <button class="teacher-diff-btn" data-diff="easy" style="background:#b7e4c7; color:#222; border:none; border-radius:8px; padding:8px 18px; font-size:1.08rem;">簡單</button>
+          <button class="teacher-diff-btn" data-diff="normal" style="background:#b7e4c7; color:#222; border:none; border-radius:8px; padding:8px 18px; font-size:1.08rem;">一般</button>
+          <button class="teacher-diff-btn" data-diff="hard" style="background:#b7e4c7; color:#222; border:none; border-radius:8px; padding:8px 18px; font-size:1.08rem;">困難</button>
+        </div>
+        <div id="teacher-table-area"></div>
+        <div style="margin-top:18px; display:flex; gap:12px; flex-wrap:wrap;">
+          <button id="teacher-add-btn" style="background:#52b788; color:#fff; border:none; border-radius:8px; padding:8px 18px; font-size:1.08rem;">新增題目</button>
+          <button id="teacher-save-btn" style="background:#2d6a4f; color:#fff; border:none; border-radius:8px; padding:8px 18px; font-size:1.08rem;">批量保存</button>
+          <button id="teacher-publish-btn" style="background:#38b000; color:#fff; border:none; border-radius:8px; padding:8px 18px; font-size:1.08rem;">發佈到學生端</button>
+          <button id="teacher-withdraw-btn" style="background:#d90429; color:#fff; border:none; border-radius:8px; padding:8px 18px; font-size:1.08rem;">撤回發佈</button>
+        </div>
+        <div id="teacher-loading" style="margin-top:18px; color:#888; display:none;">題庫載入中...</div>
+        <div style="margin-top:24px; background:#f7f7f7; border-radius:10px; padding:16px 18px;">
+          <label for="cloud-bank-select" style="font-weight:bold; color:#2d6a4f;">雲端題庫：</label>
+          <select id="cloud-bank-select" style="padding:6px 12px; border-radius:6px; border:1px solid #ccc; margin-right:8px;"></select>
+        </div>
+        <div id="cloud-bank-area" style="margin-top:12px;"></div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal 彈窗 -->
+  <div class="modal-bg" id="modal-bg">
+    <div class="modal" id="modal">
+      <div id="modal-msg"></div>
+      <button id="modal-ok">確定</button>
+    </div>
+  </div>
+  <script>
+    // =====================
+    // iOS/WhatsApp 兼容偵測
+    // =====================
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isWhatsApp = /WhatsApp/.test(navigator.userAgent);
+    // =====================
+    // Firebase 初始化
+    // =====================
+    const firebaseConfig = {
+      apiKey: "AIzaSyA-jwPL0HTtjzC3Ae-gVaeNEMAOuzAgyg0",
+      authDomain: "chinese-3cf6b.firebaseapp.com",
+      databaseURL: "https://chinese-3cf6b-default-rtdb.firebaseio.com",
+      projectId: "chinese-3cf6b",
+      storageBucket: "chinese-3cf6b.firebasestorage.app",
+      messagingSenderId: "108242530392",
+      appId: "1:108242530392:web:77936ff1f3e09177011a2d"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // 玩家ID（localStorage，若無則自動產生）
+    let playerId;
+    try {
+      playerId = localStorage.getItem('playerId');
+      if (!playerId) {
+        playerId = 'player_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('playerId', playerId);
+      }
+    } catch (e) {
+      playerId = 'player_' + Math.random().toString(36).substr(2, 9);
+    }
+
+    // 錯誤紀錄寫入 Firebase
+    function logErrorToFirebase(word, difficulty) {
+      let qText = '';
+      if (state && state.qList && typeof state.qIndex === 'number') {
+        const q = state.qList[state.qIndex];
+        if (q && q.text) {
+          qText = q.text.replace(/<blank>/g, '___');
+        }
+      }
+      db.ref('errors/').push({
+        word,
+        difficulty,
+        player: playerId,
+        question: qText,
+        timestamp: Date.now()
+      });
+    }
+
+    // =====================
+    // 題庫區塊（請於此區調整題目）
+    // =====================
+    // easy題庫（前9題單空，第10-15題雙空）
+    const easyQuestions = [
+      // 1-9: 單空題
+      {
+        text: "廉頗者，<blank>也。",
+        answers: ["趙之良將"],
+        distractors: ["秦之良將", "趙之名將"]
+      },
+      {
+        text: "藺相如者，趙人也，為趙宦者令<blank>舍人。",
+        answers: ["繆賢"],
+        distractors: ["謬讚", "繆延"]
+      },
+      {
+        text: "相如曰：「秦以城求璧而趙不許，曲在趙；趙予璧而秦不予趙城，曲在秦。均之二策，<blank>。」",
+        answers: ["寧許以負秦曲"],
+        distractors: ["寧藏以負趙曲", "寧許以負趙曲"]
+      },
+      {
+        text: "君不如<blank>請罪，則幸得脫矣。",
+        answers: ["肉袒伏斧質"],
+        distractors: ["負荊", "自刎"]
+      },
+      {
+        text: "秦王坐<blank>見相如，相如奉璧奏秦王。",
+        answers: ["章臺"],
+        distractors: ["天台", "高臺"]
+      },
+      {
+        text: "相如因持璧卻立，倚柱，<blank>。",
+        answers: ["怒髮上衝冠"],
+        distractors: ["吐血身亡", "以頭搶地"]
+      },
+      {
+        text: "秦王與羣臣相視而<blank>。",
+        answers: ["嘻"],
+        distractors: ["怒", "驚"]
+      },
+      {
+        text: "左右欲刃相如，相如張目<blank>之，左右皆靡。",
+        answers: ["叱"],
+        distractors: ["罵", "打"]
+      },
+      {
+        text: "廉頗曰：「我為趙將，有攻城野戰之大功，而藺相如徒以<blank>為勞，而位居我上，且相如素賤人，吾羞，不忍為之下。」",
+        answers: ["口舌"],
+        distractors: ["腿腳", "奉承"]
+      },
+      // 10-15: 雙空題
+      {
+        text: "廉頗為趙將伐齊，大破之，取陽晉，拜為<blank>，以<blank>聞於諸侯。",
+        answers: ["上卿", "勇氣"],
+        distractors: ["大夫", "智慧", "上將", "膽量"]
+      },
+      {
+        text: "臣竊以為其人<blank>，<blank>，宜可使。",
+        answers: ["勇士", "有智謀"],
+        distractors: ["勇者", "志士", "有智慧", "有謀略"]
+      },
+      {
+        text: "秦王大喜，傳以示<blank>及<blank>，左右皆呼萬歲。",
+        answers: ["美人", "左右"],
+        distractors: ["太后", "皇后", "侍從", "近衛"]
+      },
+      {
+        text: "大王必欲<blank>臣，臣<blank>今與璧俱碎於柱矣！",
+        answers: ["急", "頭"],
+        distractors: ["逼", "戲", "劍", "心"]
+      },
+      {
+        text: "相如雖<blank>，<blank>畏廉將軍哉？",
+        answers: ["駑", "獨"],
+        distractors: ["良", "佳", "豈", "怎"]
+      },
+      {
+        text: "先<blank>之急而後<blank>也",
+        answers: ["國家", "私讎"],
+        distractors: ["太監", "皇帝", "小家", "大家"]
+      }
+    ];
+    // normal題庫（前9題雙空，第10-15題三空）
+    const normalQuestions = [
+      // 1-9: 雙空題
+      {
+        text: "<blank>十六年，廉頗為趙將伐齊，大破之，取<blank>，拜為上卿，以勇氣聞於諸侯。",
+        answers: ["趙惠文王", "陽晉"],
+        distractors: ["趙武靈王", "趙高", "澠池", "香港"]
+      },
+      {
+        text: "臣竊以為其人<blank>，<blank>，宜可使。",
+        answers: ["勇士", "有智謀"],
+        distractors: ["智者", "智慧", "有武力", "有謀略"]
+      },
+      {
+        text: "趙王與大將軍廉頗諸大臣謀：欲予秦，秦城恐不可得，<blank>；欲勿予，即患秦兵之來。<blank>，求人可使報秦者，未得。",
+        answers: ["徒見欺", "計未定"],
+        distractors: ["不可", "計已定", "屈從", "計算後"]
+      },
+      {
+        text: "（繆賢）對曰：「臣嘗有罪，<blank>計欲亡走燕，臣舍人相如止<blank>臣[……]",
+        answers: ["竊", "止"],
+        distractors: ["打算", "心", "告發", "助"]
+      },
+      {
+        text: "相如既歸，趙王以為<blank>，拜相如為<blank>。",
+        answers: ["賢大夫", "上大夫"],
+        distractors: ["上卿", "上將", "上將軍", "尚書"]
+      },
+      {
+        text: "相如曰：「王<blank>無人，臣願奉璧往使。城入趙而璧留秦；城不入，臣請<blank>。」",
+        answers: ["必", "完璧歸趙"],
+        distractors: ["雖", "既", "告老還鄉", "辭"]
+      },
+      {
+        text: "臣以為<blank>尚不相欺，況大國乎！且以一璧之故逆彊秦之<blank>，不可。",
+        answers: ["布衣之交", "驩"],
+        distractors: ["朋友", "歡", "欲", "知己"]
+      },
+      {
+        text: "秦王恐其破璧，乃<blank>，召<blank>案圖，指從此以往十五都予趙。",
+        answers: ["辭謝固請", "有司"],
+        distractors: ["", "", "", ""]
+      },
+      {
+        text: "相如<blank>秦王雖齋，決負約不償城，乃使其從者衣褐，懷其璧，從徑道<blank>，歸璧於趙。",
+        answers: ["度", "亡"],
+        distractors: ["認為", "跑", "避", "耳聞"]
+      },
+      // 10-15: 三空題
+      {
+        text: "秦王因曰：「今殺相如，<blank>不能得璧也，而<blank>秦趙之驩，不如<blank>厚遇之，使歸趙，趙王豈以一璧之故欺秦邪！」",
+        answers: ["終", "絕", "因而"],
+        distractors: ["亦", "尚", "失", "得", "強", "擇"]
+      },
+      {
+        text: "<blank>送至境，與王訣曰：「王行，<blank>道里會遇之禮畢，還，不過三十日。三十日不還，則請立<blank>為王，以絕秦望。」",
+        answers: ["廉頗", "度", "太子"],
+        distractors: ["藺相如", "繆賢", "從", "自", "吾", "寡人"]
+      },
+      {
+        text: "藺相如如前曰：「趙王<blank>聞秦王善為秦聲，請奏<blank>秦王，以相<blank>。」",
+        answers: ["竊", "盆缻", "娛樂"],
+        distractors: ["曾", "度", "瑟", "箏", "賀", "慶"]
+      },
+      {
+        text: "秦之<blank>曰：「請以趙十五城為秦王壽。」藺相如亦曰：「請以秦之<blank>為趙王壽。」秦王<blank>酒，終不能加勝於趙。",
+        answers: ["羣臣", "咸陽", "竟"],
+        distractors: ["趙高", "洛陽", "雖", "終", "藺相如", "城池"]
+      },
+      {
+        text: "（廉頗）宣言曰：「我見相如，必<blank>之。」相如聞，不肯與會。相如每朝時，常<blank>，不欲與廉頗<blank>。",
+        answers: ["辱", "稱病", "爭列"],
+        distractors: ["讚", "打", "笑", "逃走", "見面", "打架"]
+      },
+      {
+        text: "廉頗聞之，<blank>，<blank>賓客至藺相如門謝罪，曰：「<blank>，不知將軍寬之至此也！」",
+        answers: ["肉袒負荊", "因", "鄙賤之人"],
+        distractors: ["負荊", "肉袒", "籍", "伴", "吾", "小人"]
+      }
+    ];
+    // hard題庫（前9題單空，第10-15題雙空）
+    const hardQuestions = [
+      {
+        text: "廉頗者，<blank>也。",
+        answers: ["趙之良將"]
+      },
+      {
+        text: "趙惠文王十六年，廉頗為趙將伐齊，大破之，取陽晉，拜為<blank>，以勇氣聞於諸侯。",
+        answers: ["上卿"]
+      },
+      {
+        text: "既罷歸國，以相如功大，拜為上卿，位在廉頗之<blank>。",
+        answers: ["右"]
+      },
+      {
+        text: "相如曰：「秦以城求璧而趙不許，曲在趙；趙予璧而秦不予趙城，曲在秦。均之二策，<blank>。」",
+        answers: ["寧許以負秦曲"]
+      },
+      {
+        text: "相如視秦王無意償趙城，乃前曰：「<blank>，請指示王。」",
+        answers: ["璧有瑕"]
+      },
+      {
+        text: "相如<blank>，欲以擊柱。",
+        answers: ["持其璧睨柱"]
+      },
+      {
+        text: "趙王送璧時，齋戒五日，今大王亦宜<blank>五日，設九賓於廷，臣乃敢上璧。",
+        answers: ["齋戒"]
+      },
+      {
+        text: "相如度秦王雖齋，決負約不償城，乃使其從者<blank>，懷其璧，從徑道亡，歸璧於趙。",
+        answers: ["衣褐"]
+      },
+      {
+        text: "秦王齋五日後，乃設<blank>於廷，引趙使者藺相如。",
+        answers: ["九賓禮"]
+      },
+      {
+        text: "秦王使使者告趙王，欲與王為好會於西河外澠池。趙王畏秦，<blank>。",
+        answers: ["欲毋行"]
+      },
+      {
+        text: "相如曰：「<blank>，相如請得<blank>矣！」",
+        answers: ["五步之內","以頸血濺大王"]
+      },
+      {
+        text: "左右欲刃相如，相如張目叱之，左右<blank>。於是秦王<blank>，為一擊缻。",
+        answers: ["皆靡","不懌"]
+      },
+      {
+        text: "廉頗曰：「我為趙將，有攻城野戰之大功，而藺相如<blank>，而位居我上，且相如<blank>，吾羞，不忍為之下。」",
+        answers: ["徒以口舌為勞","素賤人"]
+      },
+      {
+        text: "於是舍人相與諫曰：「臣所以<blank>，徒<blank>也。",
+        answers: ["去親戚而事君者","慕君之高義"]
+      },
+      {
+        text: "今兩虎共鬥，其<blank>。吾所以為此者，以<blank>也。",
+        answers: ["其勢不俱生","先國家之急而後私讎"]
+      }
+    ]; 
+   // =====================
+    // 題庫區塊結束
+    // =====================
+
+    // 難度設定
+    const difficultySettings = {
+      easy:   { label: "簡單",    time: 200, score: 10, hintPenalty: 5, maxHints: 7 },
+      normal: { label: "一般",    time: 180, score: 20, hintPenalty: 10, maxHints: 5 },
+      hard:   { label: "困難",    time: 220, score: 30, hintPenalty: 15, maxHints: 3 }
+    };
+
+    // 狀態變數
+    let state = {
+      difficulty: "easy",
+      qList: [],
+      qIndex: 0,
+      score: 0,
+      timer: 0,
+      timerId: null,
+      hints: 0,
+      totalHints: 0,
+      errors: 0,
+      errorCount: 0,
+      startTime: 0,
+      usedTime: 0,
+      review: [],
+      answered: false
+    };
+
+    // DOM
+    const $ = sel => document.querySelector(sel);
+    const $$ = sel => document.querySelectorAll(sel);
+
+    // ========== 學生端雲端題庫選擇功能 ==========
+    
+    // 1. 載入所有可用的雲端題庫清單
+    function loadStudentBankList() {
+      const select = document.getElementById('student-bank-select');
+      const loading = document.getElementById('student-bank-loading');
+      
+      // 清空選單，只保留預設選項
+      select.innerHTML = '<option value="default">預設題庫</option>';
+      
+      // 顯示載入中
+      loading.style.display = 'inline';
+      
+      // 從 Firebase 讀取所有可用的雲端題庫
+      db.ref('student_available_banks').once('value')
+        .then((snapshot) => {
+          const banks = [];
+          snapshot.forEach((childSnapshot) => {
+            const bankData = childSnapshot.val();
+            banks.push({
+              id: childSnapshot.key,
+              name: bankData.bankName || '未命名題庫',
+              teacher: bankData.teacherName || '未知老師',
+              data: bankData
+            });
+          });
+          
+          // 按發佈時間排序（最新的在前）
+          banks.sort((a, b) => {
+            const timeA = new Date(a.data.publishTime || 0);
+            const timeB = new Date(b.data.publishTime || 0);
+            return timeB - timeA;
+          });
+          
+          // 動態生成選單選項
+          banks.forEach(bank => {
+            const option = document.createElement('option');
+            option.value = bank.id;
+            option.textContent = `${bank.name} - ${bank.teacher}`;
+            select.appendChild(option);
+          });
+          
+          // 隱藏載入中
+          loading.style.display = 'none';
+          
+          // 預設選擇本地題庫
+          select.value = 'default';
+          loadSelectedBank('default');
+        })
+        .catch((error) => {
+          console.error('載入題庫清單失敗:', error);
+          loading.style.display = 'none';
+          loading.textContent = '載入失敗';
+          loading.style.color = '#ff4444';
+        });
+    }
+    
+    // 2. 載入選取的題庫內容
+    let currentQuestionBank = { easy: null, normal: null, hard: null };
+    function loadSelectedBank(bankId) {
+      if (bankId === 'default') {
+        // 使用本地題庫
+        currentQuestionBank = {
+          easy: easyQuestions,
+          normal: normalQuestions,
+          hard: hardQuestions
+        };
+        console.log('已載入本地題庫');
+      } else {
+        // 載入雲端題庫
+        const loading = document.getElementById('student-bank-loading');
+        loading.style.display = 'inline';
+        loading.textContent = '載入題庫中...';
+        
+        db.ref(`student_available_banks/${bankId}`).once('value')
+          .then((snapshot) => {
+            const bankData = snapshot.val();
+            if (bankData) {
+              currentQuestionBank = {
+                easy: bankData.easyQuestions || [],
+                normal: bankData.normalQuestions || [],
+                hard: bankData.hardQuestions || []
+              };
+              console.log(`已載入雲端題庫: ${bankData.bankName}`);
+            } else {
+              console.error('題庫不存在');
+              showModal('所選題庫不存在！');
+            }
+            loading.style.display = 'none';
+          })
+          .catch((error) => {
+            console.error('載入題庫失敗:', error);
+            loading.style.display = 'none';
+            loading.textContent = '載入失敗';
+            loading.style.color = '#ff4444';
+            showModal('載入題庫失敗！');
+          });
+      }
+      
+      // 更新按鈕狀態
+      updateButtonStates();
+    }
+    
+    // 3. 題庫選單變更事件
+    document.getElementById('student-bank-select').addEventListener('change', function() {
+      const selectedBankId = this.value;
+      loadSelectedBank(selectedBankId);
+    });
+
+    // 4. 更新按鈕狀態
+    function updateButtonStates() {
+      const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+      const startBtn = document.getElementById('start-btn');
+      difficultyBtns.forEach(b => b.disabled = false);
+      startBtn.disabled = true;
+    }
+
+    // 首頁互動
+    const startBtn = $("#start-btn");
+    let selectedDifficulty = null;
+
+    $$(".difficulty-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        $$(".difficulty-btn").forEach(b => b.classList.remove("selected"));
+        btn.classList.add("selected");
+        selectedDifficulty = btn.dataset.difficulty;
+        startBtn.disabled = !selectedDifficulty;
+      });
+    });
+
+    startBtn.addEventListener("click", () => {
+      state.difficulty = selectedDifficulty;
+      startGame();
+    });
+
+    // 遊戲開始
+    function startGame() {
+      // 使用目前選擇的題庫
+      let qBank = currentQuestionBank[state.difficulty] || [];
+      if (!Array.isArray(qBank) || qBank.length === 0) {
+        showModal(`所選題庫的「${difficultySettings[state.difficulty].label}」難度暫無題目！`);
+        return;
+      }
+      state.qList = [...qBank];
+      state.qIndex = 0;
+      state.score = 0;
+      state.hints = difficultySettings[state.difficulty].maxHints;
+      state.totalHints = 0;
+      state.errors = 0;
+      state.errorCount = 0;
+      state.review = [];
+      state.answered = false;
+      state.timer = difficultySettings[state.difficulty].time;
+      state.startTime = Date.now();
+      $("#home-page").style.display = "none";
+      $("#game-page").style.display = "";
+      $("#result-page").style.display = "none";
+      updateGameInfo();
+      showQuestion();
+      startTimer();
+    }
+
+    // 計時器
+    function startTimer() {
+      $("#game-timer").textContent = state.timer;
+      state.timerId = setInterval(() => {
+        state.timer--;
+        $("#game-timer").textContent = state.timer;
+        if (state.timer <= 0) {
+          clearInterval(state.timerId);
+          endGame();
+        }
+      }, 1000);
+    }
+
+    // 顯示題目
+    function showQuestion() {
+      state.answered = false;
+      state.errorCount = 0;
+      updateGameInfo();
+      $("#feedback-area").textContent = "";
+      $("#next-btn").style.display = "none";
+      $("#submit-btn").style.display = "";
+      $("#hint-btn").disabled = state.hints <= 0;
+      $("#hint-btn").textContent = state.hints > 0 ? `提示（剩${state.hints}次）` : "提示";
+      const q = state.qList[state.qIndex];
+      $("#game-qnum").textContent = `${state.qIndex + 1}/${state.qList.length}`;
+      let answerArr = q.answers;
+      let blankIndex = 0;
+      let isInput = (state.difficulty === "hard");
+      let html = q.text.replace(/<blank>/g, () => {
+        if (isInput) {
+          return `<span class="blank"><input type="text" maxlength="10" data-blank="${blankIndex++}"></span>`;
+        } else {
+          return `<span class="blank" data-blank="${blankIndex++}"></span>`;
+        }
+      });
+      $("#question-area").innerHTML = html;
+      // 選字填空
+      if (!isInput) {
+        // 選項組合
+        let choices = [];
+        answerArr.forEach(ans => choices.push(ans));
+        // 干擾字詞數量 = 正確答案2倍
+        let distractors = [];
+        if (q.distractors && q.distractors.length > 0) {
+          for (let i = 0; i < answerArr.length * 2; i++) {
+            let d = q.distractors[i % q.distractors.length];
+            distractors.push(d);
+          }
+        }
+        choices = choices.concat(distractors);
+        choices = shuffle(choices);
+        // 顯示選項
+        let cHtml = "";
+        choices.forEach((choice, idx) => {
+          if (!choice.trim()) return; // 跳過空白選項
+          cHtml += `<button class="choice-btn" data-choice="${choice}" data-idx="${idx}" draggable="true">${choice}</button>`;
+        });
+        $("#choices-area").innerHTML = cHtml;
+        // 綁定選字
+        let blanks = $$(".blank");
+        let selectedBlank = null;
+        blanks.forEach((b, i) => {
+          b.addEventListener("click", () => {
+            blanks.forEach(bb => bb.classList.remove("selected"));
+            b.classList.add("selected");
+            selectedBlank = b;
+          });
+          // iOS/WhatsApp touch 事件
+          b.addEventListener("touchstart", () => {
+            blanks.forEach(bb => bb.classList.remove("selected"));
+            b.classList.add("selected");
+            selectedBlank = b;
+          });
+          // 拖拽放置事件（僅非iOS/WhatsApp瀏覽器啟用）
+          if (!(isIOS || isWhatsApp)) {
+            b.addEventListener("dragover", e => e.preventDefault());
+            b.addEventListener("drop", e => {
+              e.preventDefault();
+              const text = e.dataTransfer.getData("text/plain");
+              b.textContent = text;
+              b.dataset.value = text;
+              blanks.forEach(bb => bb.classList.remove("selected"));
+              selectedBlank = null;
+            });
+          }
+        });
+        $$(".choice-btn").forEach(btn => {
+          btn.addEventListener("click", () => {
+            if (!selectedBlank) {
+              blanks[0].classList.add("selected");
+              selectedBlank = blanks[0];
+            }
+            selectedBlank.textContent = btn.textContent;
+            selectedBlank.dataset.value = btn.textContent;
+            selectedBlank.classList.remove("selected");
+            selectedBlank = null;
+          });
+          // iOS/WhatsApp touch 事件
+          btn.addEventListener("touchstart", () => {
+            if (!selectedBlank) {
+              blanks[0].classList.add("selected");
+              selectedBlank = blanks[0];
+            }
+            selectedBlank.textContent = btn.textContent;
+            selectedBlank.dataset.value = btn.textContent;
+            selectedBlank.classList.remove("selected");
+            selectedBlank = null;
+          });
+          // 拖拽事件（僅非iOS/WhatsApp瀏覽器啟用）
+          if (!(isIOS || isWhatsApp)) {
+            btn.addEventListener("dragstart", e => {
+              e.dataTransfer.setData("text/plain", btn.textContent);
+            });
+          }
+        });
+      } else {
+        // 手動輸入
+        $("#choices-area").innerHTML = "";
+      }
+      updateProgressBar();
+    }
+
+    // 更新遊戲資訊
+    function updateGameInfo() {
+      $("#game-difficulty").textContent = "難度：" + difficultySettings[state.difficulty].label;
+      $("#game-score").textContent = state.score;
+      $("#game-errors").textContent = state.errorCount;
+    }
+
+    // 提示功能
+    $("#hint-btn").addEventListener("click", () => {
+      if (state.hints <= 0 || state.answered) return;
+      const q = state.qList[state.qIndex];
+      let answerArr = q.answers;
+      let blankCount = answerArr.length;
+      // 找出第一個未填空
+      let filled = [];
+      if (state.difficulty === "hard") {
+        let inputs = $$("#question-area input");
+        inputs.forEach(input => filled.push(input.value.trim()));
+      } else {
+        let blanks = $$(".blank");
+        blanks.forEach(b => filled.push(b.textContent ? b.textContent.trim() : ""));
+      }
+      let toFill = filled.findIndex(val => !val);
+      if (toFill === -1) return;
+      // 填入正確答案
+      if (state.difficulty === "hard") {
+        let inputs = $$("#question-area input");
+        inputs[toFill].value = answerArr[toFill];
+      } else {
+        let blanks = $$(".blank");
+        blanks[toFill].textContent = answerArr[toFill];
+        blanks[toFill].dataset.value = answerArr[toFill];
+      }
+      state.hints--;
+      state.totalHints++;
+      state.score -= difficultySettings[state.difficulty].hintPenalty;
+      updateGameInfo();
+      $("#hint-btn").textContent = `提示（剩${state.hints}次）`;
+      if (state.hints <= 0) $("#hint-btn").disabled = true;
+    });
+
+    // 提交答案
+    $("#submit-btn").addEventListener("click", () => {
+      if (state.answered) return;
+      const q = state.qList[state.qIndex];
+      let answerArr = q.answers;
+      let blankCount = answerArr.length;
+      let userAns = [];
+      let allFilled = true;
+      if (state.difficulty === "hard") {
+        let inputs = $$("#question-area input");
+        for (let i = 0; i < blankCount; i++) {
+          let val = (inputs[i] && inputs[i].value) ? inputs[i].value.trim() : "";
+          userAns.push(val);
+          if (!val) allFilled = false;
+        }
+      } else {
+        let blanks = $$(".blank");
+        for (let i = 0; i < blankCount; i++) {
+          let val = (blanks[i] && blanks[i].textContent) ? blanks[i].textContent.trim() : "";
+          userAns.push(val);
+          if (!val) allFilled = false;
+        }
+      }
+      if (!allFilled) {
+        showModal("請仔細檢查答案，努力作答！！！");
+        return;
+      }
+      // 判斷正確
+      let correct = true;
+      for (let i = 0; i < blankCount; i++) {
+        if (userAns[i] !== answerArr[i]) {
+          correct = false;
+          break;
+        }
+      }
+      if (correct) {
+        state.score += difficultySettings[state.difficulty].score;
+        showFeedback(true, answerArr, userAns);
+        state.answered = true;
+        $("#submit-btn").style.display = "none";
+        $("#next-btn").style.display = "";
+        markBlanks(userAns, answerArr, blankCount);
+        state.review.push({
+          q: q.text.replace(/<blank>/g, "___"),
+          correct: answerArr,
+          user: userAns,
+          isCorrect: true
+        });
+      } else {
+        state.errorCount++;
+        // 錯誤字詞寫入 Firebase
+        answerArr.forEach((ans, idx) => {
+          if (userAns[idx] !== ans) {
+            logErrorToFirebase(ans, state.difficulty);
+          }
+        });
+        markBlanks(userAns, answerArr, blankCount);
+        if (state.errorCount >= 3) {
+          showFeedback(false, answerArr, userAns, true);
+          state.answered = true;
+          $("#submit-btn").style.display = "none";
+          $("#next-btn").style.display = "";
+          state.review.push({
+            q: q.text.replace(/<blank>/g, "___"),
+            correct: answerArr,
+            user: userAns,
+            isCorrect: false
+          });
+        } else {
+          showFeedback(false, answerArr, userAns, false);
+        }
+      }
+      updateGameInfo();
+    });
+
+    // 下一題
+    $("#next-btn").addEventListener("click", () => {
+      state.qIndex++;
+      if (state.qIndex >= state.qList.length) {
+        clearInterval(state.timerId);
+        endGame();
+      } else {
+        showQuestion();
+      }
+    });
+
+    // 標記空格顏色
+    function markBlanks(userAns, answerArr, blankCount) {
+      if (state.difficulty === "hard") {
+        let inputs = $$("#question-area input");
+        for (let i = 0; i < blankCount; i++) {
+          let input = inputs[i];
+          if (!input) continue;
+          input.classList.remove("correct", "wrong");
+          if (userAns[i] === answerArr[i]) {
+            input.parentElement.classList.add("correct");
+            input.parentElement.classList.remove("wrong");
+          } else {
+            input.parentElement.classList.add("wrong");
+            input.parentElement.classList.remove("correct");
+          }
+        }
+      } else {
+        let blanks = $$(".blank");
+        for (let i = 0; i < blankCount; i++) {
+          let b = blanks[i];
+          if (!b) continue;
+          b.classList.remove("correct", "wrong");
+          if ((b.textContent ? b.textContent.trim() : "") === answerArr[i]) {
+            b.classList.add("correct");
+            b.classList.remove("wrong");
+          } else {
+            b.classList.add("wrong");
+            b.classList.remove("correct");
+          }
+        }
+      }
+    }
+
+    // 回饋
+    function showFeedback(isCorrect, answerArr, userAns, showAnswer = false) {
+      let msg = "";
+      if (isCorrect) {
+        msg = `<span class="feedback-correct">答對了！</span><br>正確答案：${answerArr.join("，")}<br>你的答案：${userAns.join("，")}`;
+      } else {
+        if (showAnswer) {
+          msg = `<span class="feedback-wrong">答錯三次，正確答案：${answerArr.join("，")}<br>你的答案：${userAns.join("，")}</span>`;
+        } else {
+          msg = `<span class="feedback-wrong">答錯了，請再試一次！</span>`;
+        }
+      }
+      $("#feedback-area").innerHTML = msg;
+    }
+
+    // 結算頁
+    function endGame() {
+      state.usedTime = Math.round((Date.now() - state.startTime) / 1000);
+      $("#game-page").style.display = "none";
+      $("#result-page").style.display = "";
+      $("#result-difficulty").textContent = difficultySettings[state.difficulty].label;
+      $("#result-score").textContent = state.score;
+      $("#result-time").textContent = state.usedTime;
+      // 錯誤回顧
+      let html = "";
+      state.review.forEach((item, idx) => {
+        if (!item.isCorrect) {
+          html += `<li>\n        <div>題目：${item.q}</div>\n        <div>正確答案：<span class="review-correct">${item.correct.join("，")}</span></div>\n        <div>你的答案：<span class="review-wrong">${item.user.join("，")}</span></div>\n      </li>`;
+        }
+      });
+      if (!html) html = "<li>全部答對，太厲害了！</li>";
+      $("#review-list").innerHTML = html;
+
+      // ===== Firebase student_records 寫入（原本功能） =====
+      if (window.db && window.playerId && Array.isArray(state.qList)) {
+        state.qList.forEach((q, idx) => {
+          // 找出 review 裡對應這一題的紀錄（如果有答錯才會有）
+          const reviewItem = state.review.find(item => item.q === q.text);
+          db.ref('student_records/' + playerId).push({
+            text: q.text,
+            correct: !reviewItem, // 沒有在 review 裡就是答對
+            time: (reviewItem && typeof reviewItem.time === 'number') ? reviewItem.time : 0,
+            error: (reviewItem && typeof reviewItem.error === 'number') ? reviewItem.error : 0
+          }, function(err) {
+            if (err) {
+              console.error('寫入 student_records 失敗', err);
+            } else {
+              console.log('寫入 student_records 成功', q.text);
+            }
+          });
+        });
+      }
+      // 學習分析：統計最常錯的字詞
+      showLearningAnalysis();
+    }
+
+    // 學習分析功能：顯示最常錯的字詞與薄弱環節
+    function showLearningAnalysis() {
+      const analysisDivId = 'learning-analysis';
+      let analysisDiv = document.getElementById(analysisDivId);
+      if (!analysisDiv) {
+        analysisDiv = document.createElement('div');
+        analysisDiv.id = analysisDivId;
+        analysisDiv.style.margin = '24px 0 0 0';
+        analysisDiv.style.padding = '16px 12px';
+        analysisDiv.style.background = '#f7f7f7';
+        analysisDiv.style.borderRadius = '12px';
+        analysisDiv.style.boxShadow = '0 2px 8px #b7e4c7aa';
+        analysisDiv.style.fontSize = '1.08rem';
+        $("#result-page").appendChild(analysisDiv);
+      }
+      analysisDiv.innerHTML = '<i class="fa-solid fa-chart-simple"></i> <b>學習分析：</b>統計中...';
+      // 讀取 Firebase 統計
+      db.ref('errors/').once('value', snapshot => {
+        const data = snapshot.val();
+        if (!data) {
+          analysisDiv.innerHTML = '<i class="fa-solid fa-chart-simple"></i> <b>學習分析：</b>暫無統計資料';
+          return;
+        }
+        // 統計所有字詞錯誤次數，並記錄相關題目
+        const stats = {}; // { word: { count: 數量, questions: Set } }
+        Object.values(data).forEach(item => {
+          if (!item.word || !item.question) return;
+          if (!stats[item.word]) stats[item.word] = { count: 0, questions: new Set() };
+          stats[item.word].count++;
+          stats[item.word].questions.add(item.question);
+        });
+        // 排序取前3
+        const sorted = Object.entries(stats).sort((a, b) => b[1].count - a[1].count);
+        const top = sorted.slice(0, 3);
+        let html = '<i class="fa-solid fa-chart-simple"></i> <b>學習分析：</b>';
+        if (top.length === 0) {
+          html += '暫無統計資料';
+        } else {
+          html += '最常錯的字詞：<br>';
+          top.forEach(([word, info], idx) => {
+            html += `<div style="margin:6px 0 6px 0;"><span style="color:#d90429;font-weight:bold">${word}</span>（${info.count}次）<br>`;
+            html += '出現過的題目：<ul style="margin:2px 0 2px 16px;">';
+            info.questions.forEach(q => {
+              html += `<li style="font-size:0.98em;">${q}</li>`;
+            });
+            html += '</ul></div>';
+          });
+        }
+        analysisDiv.innerHTML = html;
+      });
+    }
+
+    // Modal 彈窗
+    function showModal(msg) {
+      $("#modal-msg").innerHTML = msg;
+      $("#modal-bg").style.display = "flex";
+    }
+    $("#modal-ok").addEventListener("click", () => {
+      $("#modal-bg").style.display = "none";
+    });
+
+    // 工具：排序
+    function shuffle(arr) {
+      let a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    // 更新進度條
+    function updateProgressBar() {
+      const percent = ((state.qIndex) / state.qList.length) * 100;
+      document.getElementById('progress-bar').style.width = percent + "%";
+    }
+
+    // ===== 老師專區功能 =====
+    const TEACHER_PASSWORD = "teacher2024"; // 可修改
+    const teacherBtn = document.getElementById("teacher-btn");
+    const teacherLoginPage = document.getElementById("teacher-login-page");
+    const teacherMainPage = document.getElementById("teacher-main-page");
+    const homePage = document.getElementById("home-page");
+    // 進入老師登入頁
+    teacherBtn.addEventListener("click", () => {
+      homePage.style.display = "none";
+      teacherLoginPage.style.display = "block";
+      teacherMainPage.style.display = "none";
+      document.getElementById("teacher-login-err").style.display = "none";
+      document.getElementById("teacher-id-input").value = "";
+      document.getElementById("teacher-pw-input").value = "";
+    });
+    // 返回首頁
+    document.getElementById("teacher-login-back").addEventListener("click", () => {
+      homePage.style.display = "block";
+      teacherLoginPage.style.display = "none";
+      teacherMainPage.style.display = "none";
+    });
+    // 登入驗證
+    document.getElementById("teacher-login-btn").addEventListener("click", () => {
+      const id = document.getElementById("teacher-id-input").value.trim();
+      const pw = document.getElementById("teacher-pw-input").value;
+      if (!id || !pw) {
+        document.getElementById("teacher-login-err").textContent = "請輸入老師ID和密碼";
+        document.getElementById("teacher-login-err").style.display = "block";
+        return;
+      }
+      if (pw !== TEACHER_PASSWORD) {
+        document.getElementById("teacher-login-err").textContent = "密碼錯誤";
+        document.getElementById("teacher-login-err").style.display = "block";
+        return;
+      }
+      // 登入成功
+      try {
+        localStorage.setItem("teacherId", id);
+      } catch (e) {
+        window._teacherId = id;
+      }
+      teacherLoginPage.style.display = "none";
+      teacherMainPage.style.display = "block";
+      homePage.style.display = "none";
+      // 登入後自動加載資料夾與題庫
+      loadFolderList(() => {
+        loadTeacherBankFromFirebase();
+        if (typeof updatePublicBtn === 'function') updatePublicBtn();
+      });
+    });
+    // 登出
+    document.getElementById("teacher-logout-btn").addEventListener("click", () => {
+      try {
+        localStorage.removeItem("teacherId");
+      } catch (e) {
+        window._teacherId = '';
+      }
+      teacherLoginPage.style.display = "block";
+      teacherMainPage.style.display = "none";
+      homePage.style.display = "none";
+    });
+
+    // ===== 題庫管理 =====
+    let teacherBank = { easy: [], normal: [], hard: [] };
+    let currentDiff = 'easy';
+    let currentFolder = '預設資料夾';
+    let folderList = [];
+
+    // 新增：儲存老師題庫到 Firebase
+    function saveTeacherBankToFirebase(cb) {
+      const teacherId = getTeacherId();
+      if (!teacherId) {
+        showModal('請先登入！');
+        return;
+      }
+      firebase.database().ref(`teacher_banks/${teacherId}/${currentFolder}`).set(teacherBank, cb);
+    }
+
+    // 新增：預覽老師題目
+    function previewTeacherQuestion(q) {
+      // 根據題型決定預覽方式
+      let diff = currentDiff;
+      let answerArr = Array.isArray(q.answers) ? q.answers : [q.answers];
+      let blankIndex = 0;
+      let isInput = (diff === "hard");
+      // 題目區
+      let html = q.text.replace(/<blank>/g, () => {
+        if (isInput) {
+          return `<span class="blank"><input type="text" maxlength="10" data-blank="${blankIndex++}" style="width:80px;"></span>`;
+        } else {
+          return `<span class="blank" data-blank="${blankIndex++}"></span>`;
+        }
+      });
+      html = `<div class="question-area" style="margin-bottom:10px;">${html}</div>`;
+      // 選項區（非 hard 顯示）
+      if (!isInput) {
+        let choices = [];
+        answerArr.forEach(ans => choices.push(ans));
+        let distractors = Array.isArray(q.distractors) ? q.distractors : [];
+        for (let i = 0; i < answerArr.length * 2; i++) {
+          let d = distractors[i % distractors.length];
+          if (d) choices.push(d);
+        }
+        choices = shuffle(choices);
+        let cHtml = '';
+        choices.forEach((choice, idx) => {
+          if (!choice.trim()) return;
+          cHtml += `<button class="choice-btn" data-choice="${choice}" data-idx="${idx}" style="margin:4px 6px 4px 0;">${choice}</button>`;
+        });
+        html += `<div class="choices-area" style="margin-bottom:10px;">${cHtml}</div>`;
+      }
+      // 檢查按鈕
+      html += `<button id='teacher-preview-check' style='margin-top:8px;padding:6px 18px;background:#2d6a4f;color:#fff;border:none;border-radius:8px;'>檢查答案</button>`;
+      html += `<div id='teacher-preview-feedback' style='margin-top:10px;min-height:24px;'></div>`;
+      showModal(html);
+
+      setTimeout(() => {
+        let blanks = document.querySelectorAll('#modal .blank');
+        let inputs = document.querySelectorAll('#modal .blank input');
+        let selectedBlank = null;
+        // 選填題型：點選空格再點選選項
+        if (!isInput) {
+          blanks.forEach((b, i) => {
+            b.addEventListener("click", () => {
+              blanks.forEach(bb => bb.classList.remove("selected"));
+              b.classList.add("selected");
+              selectedBlank = b;
+            });
+          });
+          document.querySelectorAll('#modal .choice-btn').forEach(btn => {
+            btn.addEventListener("click", () => {
+              if (!selectedBlank) {
+                blanks[0].classList.add("selected");
+                selectedBlank = blanks[0];
+              }
+              selectedBlank.textContent = btn.textContent;
+              selectedBlank.dataset.value = btn.textContent;
+              selectedBlank.classList.remove("selected");
+              selectedBlank = null;
+            });
+          });
+        }
+        // 檢查答案
+        document.getElementById('teacher-preview-check').onclick = function() {
+          let userAns = [];
+          let allFilled = true;
+          if (isInput) {
+            for (let i = 0; i < answerArr.length; i++) {
+              let val = (inputs[i] && inputs[i].value) ? inputs[i].value.trim() : "";
+              userAns.push(val);
+              if (!val) allFilled = false;
+            }
+          } else {
+            for (let i = 0; i < answerArr.length; i++) {
+              let val = (blanks[i] && blanks[i].textContent) ? blanks[i].textContent.trim() : "";
+              userAns.push(val);
+              if (!val) allFilled = false;
+            }
+          }
+          if (!allFilled) {
+            document.getElementById('teacher-preview-feedback').innerHTML = '<span style="color:#d90429;">請填滿所有空格！</span>';
+            return;
+          }
+          let correct = true;
+          for (let i = 0; i < answerArr.length; i++) {
+            if (userAns[i] !== answerArr[i]) {
+              correct = false;
+              break;
+            }
+          }
+          // 標記顏色
+          if (isInput) {
+            for (let i = 0; i < answerArr.length; i++) {
+              let input = inputs[i];
+              if (!input) continue;
+              input.classList.remove("correct", "wrong");
+              if (userAns[i] === answerArr[i]) {
+                input.parentElement.classList.add("correct");
+                input.parentElement.classList.remove("wrong");
+              } else {
+                input.parentElement.classList.add("wrong");
+                input.parentElement.classList.remove("correct");
+              }
+            }
+          } else {
+            for (let i = 0; i < answerArr.length; i++) {
+              let b = blanks[i];
+              if (!b) continue;
+              b.classList.remove("correct", "wrong");
+              if ((b.textContent ? b.textContent.trim() : "") === answerArr[i]) {
+                b.classList.add("correct");
+                b.classList.remove("wrong");
+              } else {
+                b.classList.add("wrong");
+                b.classList.remove("correct");
+              }
+            }
+          }
+          document.getElementById('teacher-preview-feedback').innerHTML = correct ? '<span style="color:#38b000;font-weight:bold;">全部正確！</span>' : '<span style="color:#d90429;font-weight:bold;">有錯誤，請檢查！</span>';
+        };
+      }, 10);
+    }
+
+    function renderTeacherTable() {
+      const area = document.getElementById('teacher-table-area');
+      const data = teacherBank[currentDiff];
+      if (!Array.isArray(data)) {
+        teacherBank[currentDiff] = [];
+      }
+      let html = `<table style="width:100%; border-collapse:collapse; background:#fff;">
+        <thead><tr style="background:#e9f5ee;">
+          <th style="padding:8px; border:1px solid #b7e4c7;">題目內容</th>
+          <th style="padding:8px; border:1px solid #b7e4c7;">答案（逗號分隔）</th>
+          <th style="padding:8px; border:1px solid #b7e4c7;">干擾項（逗號分隔）</th>
+          <th style="padding:8px; border:1px solid #b7e4c7;">操作</th>
+        </tr></thead><tbody>`;
+      teacherBank[currentDiff].forEach((q, idx) => {
+        html += `<tr>
+          <td style='padding:6px; border:1px solid #b7e4c7;'><textarea class='teacher-q-textarea' style='width:98%;height:2.5em;' data-tqidx='${idx}' data-tcol='text'>${q.text||''}</textarea></td>
+          <td style='padding:6px; border:1px solid #b7e4c7;'><input type='text' style='width:98%;' value='${Array.isArray(q.answers)?q.answers.join(","):(q.answers||"")}' data-tqidx='${idx}' data-tcol='answers'></td>
+          <td style='padding:6px; border:1px solid #b7e4c7;'><input type='text' style='width:98%;' value='${Array.isArray(q.distractors)?q.distractors.join(","):(q.distractors||"")}' data-tqidx='${idx}' data-tcol='distractors'></td>
+          <td style='padding:6px; border:1px solid #b7e4c7;'>
+            <button class='teacher-preview-btn' data-tqidx='${idx}' style='background:#f9c74f; color:#222; border:none; border-radius:6px; padding:4px 12px; margin-right:6px;'>預覽</button>
+            <button class='teacher-del-btn' data-tqidx='${idx}' style='background:#d90429; color:#fff; border:none; border-radius:6px; padding:4px 12px;'>刪除</button>
+          </td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+      area.innerHTML = html;
+      // 刪除
+      area.querySelectorAll('.teacher-del-btn').forEach(btn => {
+        btn.onclick = function() {
+          const idx = +btn.getAttribute('data-tqidx');
+          teacherBank[currentDiff].splice(idx, 1);
+          renderTeacherTable();
+        };
+      });
+      // 預覽
+      area.querySelectorAll('.teacher-preview-btn').forEach(btn => {
+        btn.onclick = function() {
+          const idx = +btn.getAttribute('data-tqidx');
+          previewTeacherQuestion(teacherBank[currentDiff][idx]);
+        };
+      });
+      // 編輯
+      area.querySelectorAll('textarea, input[type=text]').forEach(input => {
+        input.onchange = function() {
+          const idx = +input.getAttribute('data-tqidx');
+          const col = input.getAttribute('data-tcol');
+          if (col === 'text') teacherBank[currentDiff][idx].text = input.value.replace(/___/g, '<blank>');
+          if (col === 'answers') teacherBank[currentDiff][idx].answers = input.value.split(',').map(s=>s.trim()).filter(Boolean);
+          if (col === 'distractors') teacherBank[currentDiff][idx].distractors = input.value.split(',').map(s=>s.trim()).filter(Boolean);
+        };
+      });
+      // 啟用空白鍵自動插入 <blank>
+      area.querySelectorAll('.teacher-q-textarea').forEach(textarea => {
+        textarea.addEventListener('keydown', function(e) {
+          if (e.key === ' ' || e.keyCode === 32) {
+            e.preventDefault();
+            // 插入 <blank> 於游標處
+            const start = this.selectionStart;
+            const end = this.selectionEnd;
+            const value = this.value;
+            this.value = value.substring(0, start) + '<blank>' + value.substring(end);
+            this.selectionStart = this.selectionEnd = start + 7;
+            // 觸發 onchange 以即時更新資料
+            if (typeof this.onchange === 'function') this.onchange();
+          }
+        });
+      });
+      loadCloudBankList();
+    }
+    // 難度切換
+    document.querySelectorAll('.teacher-diff-btn').forEach(btn => {
+      btn.onclick = function() {
+        document.querySelectorAll('.teacher-diff-btn').forEach(b=>b.style.outline='none');
+        btn.style.outline = '2.5px solid #2d6a4f';
+        currentDiff = btn.getAttribute('data-diff');
+        renderTeacherTable();
+      };
+    });
+    // 新增題目
+    document.getElementById('teacher-add-btn').onclick = function() {
+      teacherBank[currentDiff].push({text:'',answers:[],distractors:[]});
+      renderTeacherTable();
+    };
+    // 批量保存
+    document.getElementById('teacher-save-btn').onclick = function() {
+      saveTeacherBankToFirebase(() => {
+        showModal('題庫已成功儲存到雲端！');
+      });
+    };
+
+    // 發佈到學生端
+    function publishToStudent() {
+      const teacherId = getTeacherId();
+      const folder = currentFolder;
+      
+      if (!teacherId || !folder) {
+        showModal('請先登入並選擇資料夾！');
+        return;
+      }
+      
+      // 生成唯一的題庫ID（老師ID_時間戳）
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+      const bankId = `${teacherId}_${timestamp}`;
+      
+      // 準備發佈的題庫資料
+      const publishData = {
+        bankName: folder, // 使用資料夾名稱作為題庫名稱
+        teacherName: teacherId, // 使用老師ID作為老師姓名
+        publishTime: new Date().toISOString(),
+        easyQuestions: teacherBank.easy || [],
+        normalQuestions: teacherBank.normal || [],
+        hardQuestions: teacherBank.hard || []
+      };
+      
+      // 發佈到學生端可用題庫
+      db.ref(`student_available_banks/${bankId}`).set(publishData)
+        .then(() => {
+          showModal(`題庫「${folder}」已成功發佈到學生端！`);
+          console.log('題庫發佈成功:', bankId);
+        })
+        .catch((error) => {
+          console.error('發佈失敗:', error);
+          showModal('發佈失敗，請重試！');
+        });
+    }
+    // ===== 資料夾管理 =====
+    function getTeacherId() {
+      let id = '';
+      try {
+        id = localStorage.getItem('teacherId') || '';
+      } catch (e) {
+        id = window._teacherId || '';
+      }
+      return id;
+    }
+    function showTeacherLoading(show) {
+      document.getElementById('teacher-loading').style.display = show ? '' : 'none';
+    }
+    function loadFolderList(cb) {
+      const teacherId = getTeacherId();
+      firebase.database().ref(`teacher_banks/${teacherId}`).once('value', snap => {
+        const data = snap.val() || {};
+        folderList = Object.keys(data).filter(f=>!['public','easy','normal','hard'].includes(f));
+        if (!folderList.length) folderList = ['預設資料夾'];
+        const select = document.getElementById('folder-select');
+        select.innerHTML = '';
+        folderList.forEach(f => {
+          const opt = document.createElement('option');
+          opt.value = f;
+          opt.textContent = f;
+          select.appendChild(opt);
+        });
+        if (!folderList.includes(currentFolder)) currentFolder = folderList[0];
+        select.value = currentFolder;
+        if (cb) cb();
+      });
+    }
+    document.getElementById('add-folder-btn').onclick = function() {
+      showModal(`<div>請輸入新資料夾名稱：<br><input id='new-folder-name' style='width:80%;margin-top:10px;'></div>`);
+      setTimeout(()=>{
+        document.getElementById('new-folder-name').focus();
+        document.getElementById('modal-ok').onclick = function() {
+          const name = document.getElementById('new-folder-name').value.trim();
+          if (!name) { showModal('名稱不可為空'); return; }
+          if (folderList.includes(name)) { showModal('名稱重複'); return; }
+          currentFolder = name;
+          teacherBank = { easy: [], normal: [], hard: [] };
+          saveTeacherBankToFirebase(()=>{
+            firebase.database().ref(`teacher_banks/${getTeacherId()}/${name}/public`).set(false, ()=>{
+              loadFolderList(()=>{ loadTeacherBankFromFirebase(); updatePublicBtn(); });
+              showModal('已新增資料夾！');
+            });
+          });
+        };
+      }, 100);
+    };
+    document.getElementById('delete-folder-btn').onclick = function() {
+      if (folderList.length <= 1) { showModal('至少需保留一個資料夾'); return; }
+      showModal(`<div>確定要刪除「${currentFolder}」？<br><br><button id='del-folder-confirm' style='margin:10px 8px 0 0; padding:6px 18px; background:#d90429; color:#fff; border:none; border-radius:8px;'>確定刪除</button><button id='del-folder-cancel' style='margin:10px 0 0 0; padding:6px 18px; background:#eee; color:#222; border:none; border-radius:8px;'>取消</button></div>`);
+      setTimeout(()=>{
+        document.getElementById('del-folder-confirm').onclick = function() {
+          firebase.database().ref(`teacher_banks/${getTeacherId()}/${currentFolder}`).remove(()=>{
+            loadFolderList(()=>{ loadTeacherBankFromFirebase(); updatePublicBtn(); });
+            showModal('已刪除資料夾！');
+          });
+        };
+        document.getElementById('del-folder-cancel').onclick = function() {
+          document.getElementById('modal-bg').style.display = 'none';
+        };
+      }, 100);
+    };
+    function updatePublicBtn() {
+      firebase.database().ref(`teacher_banks/${getTeacherId()}/${currentFolder}/public`).once('value', snap => {
+        const isPublic = !!snap.val();
+        document.getElementById('toggle-public-btn').textContent = isPublic ? '設為私有' : '設為公開';
+        document.getElementById('toggle-public-btn').style.background = isPublic ? '#b7e4c7' : '#f9c74f';
+      });
+    }
+    document.getElementById('toggle-public-btn').onclick = function() {
+      firebase.database().ref(`teacher_banks/${getTeacherId()}/${currentFolder}/public`).once('value', snap => {
+        const isPublic = !!snap.val();
+        firebase.database().ref(`teacher_banks/${getTeacherId()}/${currentFolder}/public`).set(!isPublic, ()=>{
+          updatePublicBtn();
+          showModal(isPublic ? '已設為私有' : '已設為公開');
+        });
+      });
+    };
+    // ===== 雲端題庫下載功能、預覽、modal等（如原本） =====
+    // ...（如原本老師專區功能完整貼回）...
+    startBtn.addEventListener("click", () => {
+      state.difficulty = selectedDifficulty;
+      startGame();
+    });
+
+    // 綁定發佈按鈕事件
+    document.getElementById('teacher-publish-btn').addEventListener('click', publishToStudent);
+    
+    // 撤回發佈功能
+    function withdrawPublishedBank() {
+      const teacherId = getTeacherId();
+      if (!teacherId) {
+        showModal('請先登入！');
+        return;
+      }
+      // 讀取所有自己發佈的題庫
+      db.ref('student_available_banks').once('value').then(snapshot => {
+        const myBanks = [];
+        snapshot.forEach(child => {
+          const val = child.val();
+          if (val.teacherName === teacherId) {
+            myBanks.push({ id: child.key, name: val.bankName });
+          }
+        });
+        if (myBanks.length === 0) {
+          showModal('你尚未發佈任何題庫！');
+          return;
+        }
+        // 顯示選擇題庫的 modal
+        let html = '<div>選擇要撤回的題庫：<br><select id="withdraw-bank-select" style="margin:10px 0; width:90%;">';
+        myBanks.forEach(b => {
+          html += `<option value="${b.id}">${b.name}</option>`;
+        });
+        html += '</select></div>';
+        showModal(html);
+        setTimeout(()=>{
+          document.getElementById('modal-ok').onclick = function() {
+            const bankId = document.getElementById('withdraw-bank-select').value;
+            db.ref(`student_available_banks/${bankId}`).remove()
+              .then(()=>{
+                showModal('已成功撤回發佈的題庫！');
+                loadStudentBankList();
+              })
+              .catch(()=>{
+                showModal('撤回失敗，請重試！');
+              });
+          };
+        }, 100);
+      });
+    }
+    document.getElementById('teacher-withdraw-btn').addEventListener('click', withdrawPublishedBank);
+    
+    // 頁面載入時初始化學生端題庫選單
+    loadStudentBankList();
+
+    // 資料夾切換加上確認彈窗與自動載入
+    const folderSelect = document.getElementById('folder-select');
+    if (folderSelect) {
+      folderSelect.addEventListener('change', function() {
+        const newFolder = this.value;
+        if (newFolder === currentFolder) return;
+        showModal(`<div>確定要切換到「${newFolder}」資料夾嗎？<br><br><button id='confirm-folder-switch' style='margin:10px 8px 0 0; padding:6px 18px; background:#2d6a4f; color:#fff; border:none; border-radius:8px;'>確定</button><button id='cancel-folder-switch' style='margin:10px 0 0 0; padding:6px 18px; background:#eee; color:#222; border:none; border-radius:8px;'>取消</button></div>`);
+        setTimeout(()=>{
+          document.getElementById('confirm-folder-switch').onclick = function() {
+            currentFolder = newFolder;
+            loadTeacherBankFromFirebase();
+            document.getElementById('modal-bg').style.display = 'none';
+          };
+          document.getElementById('cancel-folder-switch').onclick = function() {
+            document.getElementById('modal-bg').style.display = 'none';
+            folderSelect.value = currentFolder;
+          };
+        }, 100);
+      });
+    }
+
+    // 載入老師端題庫內容
+    function loadTeacherBankFromFirebase() {
+      const teacherId = getTeacherId();
+      if (!teacherId) return;
+      firebase.database().ref(`teacher_banks/${teacherId}/${currentFolder}`).once('value', snap => {
+        teacherBank = snap.val() || { easy: [], normal: [], hard: [] };
+        // 若缺少難度欄位則補齊
+        if (!teacherBank.easy) teacherBank.easy = [];
+        if (!teacherBank.normal) teacherBank.normal = [];
+        if (!teacherBank.hard) teacherBank.hard = [];
+        renderTeacherTable();
+      });
+    }
+
+    // ===== 雲端題庫下拉選單載入所有公開題庫 =====
+    function loadCloudBankList() {
+      const select = document.getElementById('cloud-bank-select');
+      const area = document.getElementById('cloud-bank-area');
+      if (!select) return;
+      select.innerHTML = '';
+      area.innerHTML = '';
+      firebase.database().ref('teacher_banks').once('value', snap => {
+        const allData = snap.val() || {};
+        let options = [];
+        const seen = new Set(); // 防止重複
+        Object.keys(allData).forEach(teacherId => {
+          const folders = allData[teacherId];
+          // 只遍歷資料夾名稱層級
+          Object.keys(folders).forEach(folderName => {
+            // 排除特殊欄位
+            if (['easy', 'normal', 'hard', 'public'].includes(folderName)) return;
+            const folderObj = folders[folderName];
+            const key = `${teacherId}|||${folderName}`;
+            if (folderObj && folderObj.public === true && !seen.has(key)) {
+              options.push({
+                teacherId,
+                folderName,
+                label: `${folderName}（${teacherId}）`
+              });
+              seen.add(key);
+            }
+          });
+        });
+        // 依名稱排序（可選）
+        options.sort((a, b) => a.label.localeCompare(b.label, 'zh-Hant'));
+        if (options.length === 0) {
+          const option = document.createElement('option');
+          option.value = '';
+          option.textContent = '暫無公開題庫';
+          select.appendChild(option);
+        } else {
+          options.forEach(opt => {
+            const option = document.createElement('option');
+            option.value = `${opt.teacherId}|||${opt.folderName}`;
+            option.textContent = opt.label;
+            select.appendChild(option);
+          });
+        }
+        // 自動觸發一次 change 以顯示內容
+        select.dispatchEvent(new Event('change'));
+      });
+
+      // 綁定 change 事件，顯示題目內容（先移除再綁定，避免重複）
+      select.onchange = null;
+      select.onchange = function() {
+        area.innerHTML = '';
+        const val = select.value;
+        if (!val || val === '') return;
+        const [teacherId, folderName] = val.split('|||');
+        firebase.database().ref(`teacher_banks/${teacherId}/${folderName}`).once('value', snap => {
+          const bank = snap.val() || { easy: [], normal: [], hard: [] };
+          if (!bank.easy) bank.easy = [];
+          if (!bank.normal) bank.normal = [];
+          if (!bank.hard) bank.hard = [];
+          let html = '';
+          ['easy','normal','hard'].forEach(diff => {
+            const diffLabel = diff==='easy'?'簡單':diff==='normal'?'一般':'困難';
+            html += `<div style='margin:12px 0 6px 0;font-weight:bold;color:#2d6a4f;'>${diffLabel}題目 <button class='cloud-download-all' data-diff='${diff}' style='margin-left:8px;padding:2px 10px;background:#52b788;color:#fff;border:none;border-radius:6px;font-size:0.95em;'>全部下載到本地</button></div>`;
+            if (Array.isArray(bank[diff]) && bank[diff].length > 0) {
+              html += '<ul style="margin:0 0 10px 0;padding:0;list-style:none;">';
+              bank[diff].forEach((q, idx) => {
+                html += `<li style='background:#f7f7f7;margin-bottom:6px;padding:8px 8px;border-radius:6px;'>
+                  <div><b>題目：</b>${q.text||''}</div>
+                  <div><b>答案：</b>${Array.isArray(q.answers)?q.answers.join('，'):q.answers||''}</div>
+                  <div><b>干擾項：</b>${Array.isArray(q.distractors)?q.distractors.join('，'):q.distractors||''}</div>
+                  <button class='cloud-download-one' data-diff='${diff}' data-idx='${idx}' style='margin-top:4px;padding:2px 10px;background:#577590;color:#fff;border:none;border-radius:6px;font-size:0.95em;'>下載到本地</button>
+                </li>`;
+              });
+              html += '</ul>';
+            } else {
+              html += '<div style="color:#888;margin-bottom:10px;">（無題目）</div>';
+            }
+          });
+          area.innerHTML = html;
+
+          // 單題下載
+          area.querySelectorAll('.cloud-download-one').forEach(btn => {
+            btn.onclick = function() {
+              const diff = btn.getAttribute('data-diff');
+              const idx = +btn.getAttribute('data-idx');
+              const q = bank[diff][idx];
+              if (!q) return;
+              teacherBank[diff].push(JSON.parse(JSON.stringify(q)));
+              renderTeacherTable();
+              showModal('已下載到本地題庫！');
+            };
+          });
+          // 全部下載
+          area.querySelectorAll('.cloud-download-all').forEach(btn => {
+            btn.onclick = function() {
+              const diff = btn.getAttribute('data-diff');
+              if (!Array.isArray(bank[diff]) || bank[diff].length === 0) return;
+              // 避免重複下載同一題
+              const texts = new Set(teacherBank[diff].map(q=>q.text));
+              bank[diff].forEach(q => {
+                if (!texts.has(q.text)) teacherBank[diff].push(JSON.parse(JSON.stringify(q)));
+              });
+              renderTeacherTable();
+              showModal('全部題目已下載到本地題庫！');
+            };
+          });
+        });
+      };
+    }
+
+    // 進入老師專區主頁時自動載入雲端題庫下拉選單
+    if (teacherMainPage) {
+      teacherMainPage.addEventListener('show', loadCloudBankList);
+      // 或直接呼叫一次
+      loadCloudBankList();
+    }
+
+    // JS: 分頁切換
+    const teacherTabs = document.querySelectorAll('.teacher-tab-btn');
+    const teacherMainArea = document.getElementById('teacher-main-area');
+    const teacherStatArea = document.getElementById('teacher-stat-area');
+    const teacherAutoArea = document.getElementById('teacher-auto-area');
+    teacherTabs.forEach(btn => {
+      btn.onclick = function() {
+        teacherTabs.forEach(b=>b.style.outline='none');
+        btn.style.outline = '2.5px solid #2d6a4f';
+        const tab = btn.getAttribute('data-tab');
+        teacherMainArea.style.display = (tab==='main') ? '' : 'none';
+        teacherStatArea.style.display = (tab==='stat') ? '' : 'none';
+        // teacherAutoArea.style.display = (tab==='auto') ? '' : 'none'; // 這行要刪掉
+      };
+    });
+  </script>
+</body>
+</html>
